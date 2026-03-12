@@ -255,7 +255,7 @@ export default function CrashDetectionSection() {
             maxWidth: "800px",
             margin: "3rem auto 0",
             display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))",
+            gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 140px), 1fr))",
             gap: "1rem",
             textAlign: "center",
           }}

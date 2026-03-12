@@ -210,3 +210,23 @@ body {
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Product hero — 2 column on desktop */
+.product-hero-grid {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .product-hero-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Env feature card — 2-col on desktop */
+.env-feature-card {
+  grid-template-columns: 1fr;
+}
+@media (min-width: 768px) {
+  .env-feature-card {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}

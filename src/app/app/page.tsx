@@ -180,7 +180,7 @@ export default function AppPage() {
             <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ marginBottom: "1rem" }}>
               <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "#737373", marginBottom: "1rem" }}>Available Widgets</p>
             </motion.div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 220px), 1fr))", gap: "1rem" }}>
               {hudWidgets.map((widget, i) => {
                 const Icon = widget.icon;
                 return (
@@ -204,7 +204,7 @@ export default function AppPage() {
             <motion.div {...fadeUp} transition={{ duration: 0.8 }}>
               <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.2em", color: "#737373", marginBottom: "1rem" }}>Layout Presets</p>
             </motion.div>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "1rem" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 200px), 1fr))", gap: "1rem" }}>
               {hudPresets.map((preset, i) => (
                 <motion.div key={preset.name} {...fadeUp} transition={{ duration: 0.6, delay: i * 0.1 }} style={{ padding: "1.5rem", borderRadius: "1.25rem", backgroundColor: `${preset.accent}08`, border: `1px solid ${preset.accent}20` }}>
                   <h4 style={{ fontSize: "1.125rem", fontWeight: 700, color: preset.accent, marginBottom: "0.5rem" }}>{preset.name}</h4>

@@ -14,9 +14,24 @@ import {
   Wrench,
   Wind,
   Zap,
+  Check,
+  Truck,
+  RefreshCw,
+  Award,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+
+/* ── data ── */
+
+const quickSpecs = [
+  "ESP32S3 240 MHz Dual-Core",
+  "128×64 OLED HUD @ 60 fps",
+  "Dual-Pane Heated Anti-Fog Lens",
+  "6-Axis IMU — Crash SOS",
+  "6 h Heated / 8 h Standard Battery",
+  "IP64 Dust-Tight & Splash-Proof",
+];
 
 const snowFeatures = [
   {
@@ -55,24 +70,28 @@ const environmentFeatures = [
     title: "Dual-Pane Anti-Fog Technology",
     description:
       "Unlike single-pane goggles that rely solely on chemical coatings, Sentio Snow uses a sealed dual-pane construction with a 3 mm air gap. This thermal isolation barrier prevents the temperature differential across the lens from reaching the dew point. When extreme conditions overwhelm passive anti-fog — prolonged hiking in deep snow, or transitioning from a warm gondola to -20°C air — the ITO heating element provides active defogging at 3W, clearing the lens in under 8 seconds. No other goggle on the market combines passive and active anti-fog in a single lens.",
+    align: "left",
   },
   {
     icon: Zap,
     title: "Thermal Battery Insulation",
     description:
       "The 800 mAh lithium-polymer battery is wrapped in a dual-layer aerogel-foam thermal jacket that maintains cell temperature above -5°C even when the ambient air drops to -25°C. Cold batteries lose capacity exponentially — an uninsulated Li-Po at -20°C delivers only 40% of its rated capacity. Our thermal insulation keeps the cell above its efficiency curve, delivering 85%+ capacity in the coldest conditions you'll ever ride. The result: 6 hours of heated anti-fog mode or 8+ hours in standard mode, even at altitude.",
+    align: "right",
   },
   {
     icon: Sun,
     title: "UV400 Snow-Blindness Protection",
     description:
       "At altitude, UV intensity increases by approximately 10% per 1,000 meters — and fresh snow reflects up to 80% of UV radiation. Sentio Snow lenses block 100% of UVA, UVB, and UVC radiation up to 400 nm, far exceeding the EN 174:2001 standard for snow sports. The Category 3 (S3) lens tint provides an 8-18% VLT range optimized for bright snow conditions, reducing glare without sacrificing terrain contrast. Your eyes are protected from the invisible damage that causes photokeratitis (snow blindness) and long-term retinal issues.",
+    align: "left",
   },
   {
     icon: Wind,
     title: "Spherical Lens Geometry",
     description:
       "The injection-molded polycarbonate lens follows a spherical curvature that mirrors the natural shape of the human eye. This eliminates the optical distortion found in flat or cylindrical lenses — where straight lines appear bent near the periphery. The result is a 140° horizontal and 90° vertical field of view with edge-to-edge clarity. No blind spots, no warping, no compromises — just the mountain exactly as your eyes would see it, enhanced by the HUD data floating in your upper-right periphery.",
+    align: "right",
   },
 ];
 
@@ -121,7 +140,7 @@ const snowSpecs = [
 const fadeUp = {
   initial: { opacity: 0, y: 40 },
   whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true, margin: "-80px" as const },
+  viewport: { once: true, margin: "-60px" as const },
 };
 
 export default function SnowPage() {
@@ -130,10 +149,10 @@ export default function SnowPage() {
       style={{
         minHeight: "100vh",
         background:
-          "linear-gradient(180deg, #000000 0%, #0a1628 10%, #0D1B2A 30%, #1B2A4A 50%, #0D1B2A 75%, #000000 100%)",
+          "linear-gradient(180deg, #000000 0%, #060d18 8%, #0a1628 20%, #0D1B2A 40%, #1B2A4A 55%, #0D1B2A 75%, #000000 100%)",
       }}
     >
-      {/* Falling snow particles */}
+      {/* Falling snow */}
       <div style={{ position: "fixed", inset: 0, pointerEvents: "none", overflow: "hidden", zIndex: 1 }}>
         {[...Array(25)].map((_, i) => {
           const size = 3 + (i % 4) * 1.5;
@@ -142,16 +161,7 @@ export default function SnowPage() {
           return (
             <motion.div
               key={i}
-              style={{
-                position: "absolute",
-                width: size,
-                height: size,
-                borderRadius: "50%",
-                backgroundColor: "rgba(255,255,255,0.5)",
-                boxShadow: "0 0 4px rgba(255,255,255,0.3)",
-                left: `${leftPos}%`,
-                top: "-2%",
-              }}
+              style={{ position: "absolute", width: size, height: size, borderRadius: "50%", backgroundColor: "rgba(255,255,255,0.5)", boxShadow: "0 0 4px rgba(255,255,255,0.3)", left: `${leftPos}%`, top: "-2%" }}
               animate={{ y: ["0vh", "105vh"], x: [0, drift, 0], opacity: [0, 0.7, 0] }}
               transition={{ duration: 6 + (i % 7) * 2, repeat: Infinity, delay: i * 0.6, ease: "linear" }}
             />
@@ -159,67 +169,128 @@ export default function SnowPage() {
         })}
       </div>
 
-      {/* ───── HERO SECTION ───── */}
-      <section style={{ paddingTop: "6rem", paddingBottom: "3rem", position: "relative", overflow: "hidden", zIndex: 2 }}>
-        <div style={{ position: "absolute", top: 0, left: 0, width: 600, height: 600, borderRadius: "50%", background: "rgba(56,189,248,0.05)", filter: "blur(150px)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: 0, right: 0, width: 500, height: 500, borderRadius: "50%", background: "rgba(103,232,249,0.03)", filter: "blur(120px)", pointerEvents: "none" }} />
+      {/* ───── BACK NAV ───── */}
+      <div className="container-main" style={{ position: "relative", zIndex: 20, paddingTop: "6rem" }}>
+        <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }}>
+          <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "rgba(56,189,248,0.6)", textDecoration: "none" }}>
+            <ArrowLeft size={16} /> Back to Home
+          </Link>
+        </motion.div>
+      </div>
 
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.6 }} style={{ marginBottom: "3rem" }}>
-            <Link href="/" style={{ display: "inline-flex", alignItems: "center", gap: "0.5rem", fontSize: "0.875rem", color: "rgba(56,189,248,0.6)", textDecoration: "none" }}>
-              <ArrowLeft size={16} /> Back to Home
-            </Link>
-          </motion.div>
+      {/* ═══════════════════════════════════════════
+          1. HERO BUY PANEL — 2 Columns
+      ═══════════════════════════════════════════ */}
+      <section style={{ position: "relative", overflow: "hidden", paddingBottom: "4rem", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "2rem 1.5rem 0" }}>
+          <div className="product-hero-grid" style={{ display: "grid", gap: "2rem", alignItems: "center" }}>
+            {/* LEFT — Product Image on Frost Pedestal */}
+            <motion.div initial={{ opacity: 0, x: -50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }} style={{ position: "relative" }}>
+              <div
+                style={{
+                  position: "relative",
+                  borderRadius: "2rem",
+                  overflow: "hidden",
+                  background: "linear-gradient(180deg, #0a1525 0%, #0f1e35 40%, #162a4a 70%, #0a1420 100%)",
+                  padding: "2.5rem 2rem 1.5rem",
+                }}
+              >
+                {/* Frost texture overlay */}
+                <div style={{ position: "absolute", inset: 0, opacity: 0.04, backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.5'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")" }} />
+                {/* Rim lighting — arctic blue */}
+                <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "3px", background: "linear-gradient(90deg, transparent 5%, rgba(56,189,248,0.6) 30%, rgba(103,232,249,0.5) 70%, transparent 95%)" }} />
+                <div style={{ position: "absolute", bottom: 0, left: "10%", right: "10%", height: "2px", background: "linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent)" }} />
+                {/* Glows */}
+                <div style={{ position: "absolute", top: "40%", left: "50%", transform: "translate(-50%, -50%)", width: "80%", height: "80%", borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(103,232,249,0.06) 40%, transparent 70%)", filter: "blur(40px)", pointerEvents: "none" }} />
 
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] as const }} style={{ textAlign: "center", marginBottom: "4rem" }}>
-            <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(56,189,248,0.8)", marginBottom: "1rem" }}>Snow Edition</p>
-            <h1 style={{ fontSize: "clamp(2.5rem, 6vw, 4.5rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
-              Made for the{" "}
-              <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9, #bae6fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Mountain</span>
-            </h1>
-            <p style={{ marginTop: "1.5rem", color: "#a3a3a3", fontSize: "1.125rem", maxWidth: "48rem", margin: "1.5rem auto 0", fontWeight: 300, lineHeight: 1.7 }}>
-              Crystal clarity in the coldest conditions on earth. From the dual-pane heated lens that defeats fog to the thermally insulated battery that keeps your HUD alive at -25°C, every detail of Sentio Snow was designed for high-altitude performance — from first chair to last run.
-            </p>
-          </motion.div>
+                <Image src="/images/snow-goggles.png" alt="Sentio Snow Edition Goggles" width={600} height={600} priority style={{ position: "relative", zIndex: 5, width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 12px 40px rgba(56,189,248,0.3)) drop-shadow(0 0 60px rgba(103,232,249,0.08))" }} />
+                <div style={{ position: "relative", zIndex: 6, width: "80%", height: "1px", margin: "0.5rem auto 0", background: "linear-gradient(90deg, transparent, rgba(56,189,248,0.3), transparent)" }} />
+              </div>
+            </motion.div>
 
-          {/* Product Image */}
-          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] as const, delay: 0.2 }} style={{ display: "flex", justifyContent: "center", marginBottom: "5rem" }}>
-            <div style={{ position: "relative", width: "100%", maxWidth: "550px" }}>
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "120%", height: "120%", borderRadius: "50%", background: "radial-gradient(circle, rgba(56,189,248,0.15) 0%, rgba(93,173,226,0.08) 40%, transparent 70%)", filter: "blur(50px)", pointerEvents: "none" }} />
-              <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "80%", height: "80%", borderRadius: "50%", background: "radial-gradient(circle, rgba(103,232,249,0.12) 0%, transparent 60%)", filter: "blur(25px)", pointerEvents: "none" }} />
-              <div style={{ position: "absolute", inset: 0, borderRadius: "2rem", background: "linear-gradient(135deg, rgba(56,189,248,0.25), transparent, rgba(103,232,249,0.15))", filter: "blur(20px)" }} />
-              <Image src="/images/snow-goggles.png" alt="Sentio Snow Edition Goggles" width={600} height={600} priority style={{ position: "relative", zIndex: 10, width: "100%", height: "auto", objectFit: "contain", filter: "drop-shadow(0 12px 40px rgba(56,189,248,0.3)) drop-shadow(0 0 80px rgba(93,173,226,0.1))" }} />
-            </div>
-          </motion.div>
+            {/* RIGHT — Purchasing Panel */}
+            <motion.div initial={{ opacity: 0, x: 50 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.15 }} style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+              <div>
+                <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(56,189,248,0.8)", marginBottom: "0.75rem" }}>
+                  SENTIO&ensp;|&ensp;SNOW EDITION
+                </p>
+                <h1 style={{ fontSize: "clamp(2rem, 5vw, 3.5rem)", fontWeight: 700, letterSpacing: "-0.02em", lineHeight: 1.1 }}>
+                  Made for the{" "}
+                  <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9, #bae6fd)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Mountain</span>
+                </h1>
+                <p style={{ marginTop: "1rem", color: "#a3a3a3", fontSize: "1rem", lineHeight: 1.7, fontWeight: 300 }}>
+                  Crystal clarity in the coldest conditions on earth. Dual-pane heated anti-fog, thermally insulated battery, and UV400 snow-blindness protection — in one 195 g package.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                {quickSpecs.map((spec) => (
+                  <div key={spec} style={{ display: "flex", alignItems: "center", gap: "0.625rem" }}>
+                    <Check size={14} style={{ color: "#38bdf8", flexShrink: 0 }} />
+                    <span style={{ fontSize: "0.8125rem", color: "#d4d4d4" }}>{spec}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div>
+                <div style={{ display: "flex", alignItems: "baseline", gap: "0.75rem", marginBottom: "1rem" }}>
+                  <span style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 800, color: "#38bdf8" }}>$379</span>
+                  <span style={{ fontSize: "0.875rem", color: "#737373" }}>Pre-order price</span>
+                </div>
+                <button style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", padding: "1.125rem 2rem", borderRadius: "9999px", background: "linear-gradient(90deg, #38bdf8, #67e8f9)", color: "#000", fontWeight: 700, fontSize: "1rem", border: "none", cursor: "pointer", transition: "all 0.3s", boxShadow: "0 0 40px rgba(56,189,248,0.3), 0 4px 20px rgba(0,0,0,0.3)", letterSpacing: "0.02em" }}>
+                  <ShoppingCart size={20} />
+                  Pre-Order Snow Edition
+                </button>
+              </div>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem" }}>
+                {[
+                  { icon: Truck, text: "Free Shipping" },
+                  { icon: RefreshCw, text: "30-Day Returns" },
+                  { icon: Award, text: "2-Year Warranty" },
+                ].map((t) => {
+                  const Icon = t.icon;
+                  return (
+                    <div key={t.text} style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                      <Icon size={14} style={{ color: "rgba(56,189,248,0.5)" }} />
+                      <span style={{ fontSize: "0.75rem", color: "#737373" }}>{t.text}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
-      {/* ───── EXPANDED FEATURES ───── */}
-      <section style={{ paddingTop: "2rem", paddingBottom: "5rem", position: "relative", zIndex: 2 }}>
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
+      {/* ═══════════════════════════════════════════
+          2. CORE CAPABILITIES
+      ═══════════════════════════════════════════ */}
+      <section style={{ paddingTop: "4rem", paddingBottom: "4rem", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
           <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-            <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "1rem" }}>Core Capabilities</p>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "0.75rem" }}>Core Capabilities</p>
             <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
               Everything on Your{" "}
               <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Lens</span>
             </h2>
           </motion.div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", maxWidth: "800px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 280px), 1fr))", gap: "1.25rem" }}>
             {snowFeatures.map((f, i) => {
               const Icon = f.icon;
               return (
-                <motion.div key={f.label} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} className="card-responsive" style={{ borderRadius: "1.5rem", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(56,189,248,0.06)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "0.75rem" }}>
-                    <div style={{ width: "2.5rem", height: "2.5rem", borderRadius: "0.75rem", backgroundColor: "rgba(56,189,248,0.1)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <motion.div key={f.label} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} style={{ padding: "1.75rem", borderRadius: "1.25rem", background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(56,189,248,0.06)" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+                    <div style={{ width: "2.5rem", height: "2.5rem", borderRadius: "0.75rem", backgroundColor: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
                       <Icon style={{ color: "#38bdf8" }} size={18} />
                     </div>
                     <div>
                       <h3 style={{ fontSize: "1rem", fontWeight: 600, color: "#fff" }}>{f.label}</h3>
-                      <p style={{ fontSize: "0.75rem", color: "#38bdf8" }}>{f.detail}</p>
+                      <p style={{ fontSize: "0.7rem", color: "#38bdf8", letterSpacing: "0.02em" }}>{f.detail}</p>
                     </div>
                   </div>
-                  <p style={{ color: "#a3a3a3", fontSize: "0.875rem", lineHeight: 1.8 }}>{f.description}</p>
+                  <p style={{ color: "#a3a3a3", fontSize: "0.8125rem", lineHeight: 1.8 }}>{f.description}</p>
                 </motion.div>
               );
             })}
@@ -227,32 +298,40 @@ export default function SnowPage() {
         </div>
       </section>
 
-      {/* ───── ENVIRONMENT ENGINEERING ───── */}
-      <section style={{ paddingTop: "5rem", paddingBottom: "5rem", background: "linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.4) 100%)", position: "relative", zIndex: 2 }}>
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
+      {/* ═══════════════════════════════════════════
+          3. ENVIRONMENT ENGINEERING — Alternating
+      ═══════════════════════════════════════════ */}
+      <section style={{ paddingTop: "4rem", paddingBottom: "4rem", background: "linear-gradient(180deg, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0.8) 50%, rgba(0,0,0,0.5) 100%)", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
           <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-            <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "1rem" }}>Environment Engineering</p>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "0.75rem" }}>Environment Engineering</p>
             <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
               Built for{" "}
               <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>the Cold</span>
             </h2>
-            <p style={{ marginTop: "1.5rem", color: "#a3a3a3", fontSize: "1rem", maxWidth: "40rem", margin: "1.5rem auto 0", fontWeight: 300, lineHeight: 1.7 }}>
+            <p style={{ marginTop: "1rem", color: "#a3a3a3", fontSize: "1rem", maxWidth: "40rem", margin: "1rem auto 0", fontWeight: 300, lineHeight: 1.7 }}>
               High-altitude winter conditions push every material and every circuit to its limits. We didn&apos;t design around the cold — we designed for it.
             </p>
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "1.25rem", maxWidth: "800px", margin: "0 auto" }} className="bento-hardware-grid">
+          <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
             {environmentFeatures.map((f, i) => {
               const Icon = f.icon;
+              const isRight = f.align === "right";
               return (
-                <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} className="card-responsive" style={{ borderRadius: "1.5rem", background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(56,189,248,0.08)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-                    <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "0.875rem", backgroundColor: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Icon style={{ color: "#38bdf8" }} size={18} />
+                <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} className="env-feature-card" style={{ display: "grid", gap: "2rem", alignItems: "center", padding: "2rem", borderRadius: "1.5rem", background: "linear-gradient(180deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(56,189,248,0.06)" }}>
+                  <div style={{ order: isRight ? 2 : 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
+                      <div style={{ width: "3rem", height: "3rem", borderRadius: "1rem", backgroundColor: "rgba(56,189,248,0.1)", border: "1px solid rgba(56,189,248,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                        <Icon style={{ color: "#38bdf8" }} size={20} />
+                      </div>
+                      <h3 style={{ fontSize: "1.25rem", fontWeight: 700, letterSpacing: "-0.01em" }}>{f.title}</h3>
                     </div>
-                    <h3 style={{ fontSize: "1.125rem", fontWeight: 700, letterSpacing: "-0.01em" }}>{f.title}</h3>
+                    <p style={{ color: "#a3a3a3", fontSize: "0.875rem", lineHeight: 1.8 }}>{f.description}</p>
                   </div>
-                  <p style={{ color: "#a3a3a3", fontSize: "0.875rem", lineHeight: 1.8 }}>{f.description}</p>
+                  <div style={{ order: isRight ? 1 : 2, height: "180px", borderRadius: "1rem", background: `linear-gradient(${isRight ? "135deg" : "225deg"}, rgba(56,189,248,0.08) 0%, rgba(103,232,249,0.03) 50%, transparent 100%)`, border: "1px solid rgba(56,189,248,0.06)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon style={{ color: "rgba(56,189,248,0.15)" }} size={64} />
+                  </div>
                 </motion.div>
               );
             })}
@@ -260,32 +339,32 @@ export default function SnowPage() {
         </div>
       </section>
 
-      {/* ───── HELMET INTEGRATION ───── */}
-      <section style={{ paddingTop: "5rem", paddingBottom: "5rem", position: "relative", zIndex: 2 }}>
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
+      {/* ═══════════════════════════════════════════
+          4. HELMET INTEGRATION
+      ═══════════════════════════════════════════ */}
+      <section style={{ paddingTop: "4rem", paddingBottom: "4rem", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
           <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ textAlign: "center", marginBottom: "3.5rem" }}>
-            <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "1rem" }}>Ergonomics</p>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "0.75rem" }}>Ergonomics</p>
             <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
               Helmet Integration{" "}
               <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>&amp; Comfort</span>
             </h2>
-            <p style={{ marginTop: "1.5rem", color: "#a3a3a3", fontSize: "1rem", maxWidth: "40rem", margin: "1.5rem auto 0", fontWeight: 300, lineHeight: 1.7 }}>
+            <p style={{ marginTop: "1rem", color: "#a3a3a3", fontSize: "1rem", maxWidth: "40rem", margin: "1rem auto 0", fontWeight: 300, lineHeight: 1.7 }}>
               All-day comfort in freezing conditions. Every gram of foam and every millimeter of fit was tested through hundreds of hours of on-mountain riding.
             </p>
           </motion.div>
 
-          <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem", maxWidth: "800px", margin: "0 auto" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(min(100%, 300px), 1fr))", gap: "1.25rem" }}>
             {helmetFeatures.map((f, i) => {
               const Icon = f.icon;
               return (
-                <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} className="card-responsive" style={{ borderRadius: "1.5rem", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.05)" }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1rem" }}>
-                    <div style={{ width: "2.75rem", height: "2.75rem", borderRadius: "0.875rem", backgroundColor: "rgba(56,189,248,0.08)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-                      <Icon style={{ color: "#38bdf8" }} size={18} />
-                    </div>
-                    <h3 style={{ fontSize: "1.125rem", fontWeight: 700, letterSpacing: "-0.01em" }}>{f.title}</h3>
+                <motion.div key={f.title} {...fadeUp} transition={{ duration: 0.8, delay: i * 0.1 }} style={{ padding: "1.75rem", borderRadius: "1.25rem", background: "linear-gradient(180deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)", border: "1px solid rgba(56,189,248,0.06)" }}>
+                  <div style={{ width: "3rem", height: "3rem", borderRadius: "1rem", backgroundColor: "rgba(56,189,248,0.08)", border: "1px solid rgba(56,189,248,0.1)", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "1.25rem" }}>
+                    <Icon style={{ color: "#38bdf8" }} size={20} />
                   </div>
-                  <p style={{ color: "#a3a3a3", fontSize: "0.875rem", lineHeight: 1.8 }}>{f.description}</p>
+                  <h3 style={{ fontSize: "1.125rem", fontWeight: 700, marginBottom: "0.75rem", letterSpacing: "-0.01em" }}>{f.title}</h3>
+                  <p style={{ color: "#a3a3a3", fontSize: "0.8125rem", lineHeight: 1.8 }}>{f.description}</p>
                 </motion.div>
               );
             })}
@@ -293,23 +372,25 @@ export default function SnowPage() {
         </div>
       </section>
 
-      {/* ───── FULL SPEC SHEET ───── */}
-      <section style={{ paddingTop: "5rem", paddingBottom: "3rem", position: "relative", zIndex: 2 }}>
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
+      {/* ═══════════════════════════════════════════
+          5. INDUSTRIAL SPEC SHEET
+      ═══════════════════════════════════════════ */}
+      <section style={{ paddingTop: "4rem", paddingBottom: "4rem", backgroundColor: "rgba(5,10,20,0.8)", position: "relative", zIndex: 2 }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 1.5rem" }}>
           <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ textAlign: "center", marginBottom: "3rem" }}>
-            <p style={{ fontSize: "0.875rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "1rem" }}>Full Specifications</p>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "#737373", marginBottom: "0.75rem" }}>Full Specifications</p>
             <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em" }}>
               Technical{" "}
               <span style={{ background: "linear-gradient(90deg, #38bdf8, #67e8f9)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>Details</span>
             </h2>
           </motion.div>
 
-          <motion.div {...fadeUp} transition={{ duration: 0.8, delay: 0.2 }} className="card-responsive" style={{ maxWidth: "700px", margin: "0 auto 3rem", borderRadius: "1.5rem", backgroundColor: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.04)" }}>
-            <div className="specs-grid">
-              {snowSpecs.map((spec) => (
-                <div key={spec.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.625rem 0", borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
-                  <span style={{ fontSize: "0.8125rem", color: "#737373" }}>{spec.label}</span>
-                  <span style={{ fontSize: "0.8125rem", color: "#fff", fontWeight: 500, textAlign: "right" }}>{spec.value}</span>
+          <motion.div {...fadeUp} transition={{ duration: 0.8, delay: 0.1 }} style={{ borderRadius: "1.25rem", backgroundColor: "rgba(8,16,30,0.9)", border: "1px solid rgba(56,189,248,0.06)", overflow: "hidden" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 0 }}>
+              {snowSpecs.map((spec, i) => (
+                <div key={spec.label} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "0.875rem 1.5rem", borderBottom: i < snowSpecs.length - 1 ? "1px solid rgba(56,189,248,0.04)" : "none", backgroundColor: i % 2 === 0 ? "rgba(56,189,248,0.02)" : "transparent" }}>
+                  <span style={{ fontSize: "0.8125rem", color: "#737373", fontWeight: 500 }}>{spec.label}</span>
+                  <span style={{ fontSize: "0.8125rem", color: "#fff", fontWeight: 600, textAlign: "right", fontFamily: "monospace", letterSpacing: "0.02em" }}>{spec.value}</span>
                 </div>
               ))}
             </div>
@@ -317,38 +398,46 @@ export default function SnowPage() {
         </div>
       </section>
 
-      {/* ───── PURCHASE CARD ───── */}
-      <section style={{ paddingTop: "1rem", paddingBottom: "5rem", position: "relative", zIndex: 2 }}>
-        <div className="container-main" style={{ position: "relative", zIndex: 10 }}>
-          <div style={{ maxWidth: "700px", margin: "0 auto" }}>
-            <motion.div {...fadeUp} transition={{ duration: 0.8 }} className="card-responsive" style={{ borderRadius: "1.5rem", background: "linear-gradient(180deg, rgba(12,74,110,0.3), rgba(0,0,0,0.6))", border: "1px solid rgba(56,189,248,0.1)", backdropFilter: "blur(8px)" }}>
-              <div className="ecommerce-header">
-                <div>
-                  <h3 style={{ fontSize: "1.5rem", fontWeight: 600, letterSpacing: "-0.02em" }}>Sentio Snow</h3>
-                  <p style={{ fontSize: "0.875rem", color: "#737373", marginTop: "0.25rem" }}>Ski &amp; Snowboard Edition</p>
-                </div>
-                <div style={{ textAlign: "right" }}>
-                  <p style={{ fontSize: "clamp(1.75rem, 5vw, 2.5rem)", fontWeight: 700, color: "#38bdf8" }}>$379</p>
-                  <p style={{ fontSize: "0.75rem", color: "#737373" }}>Pre-order price</p>
-                </div>
-              </div>
+      {/* ═══════════════════════════════════════════
+          6. FINAL CTA — The Sentinel
+      ═══════════════════════════════════════════ */}
+      <section style={{ paddingTop: "5rem", paddingBottom: "6rem", position: "relative", zIndex: 2 }}>
+        <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: 600, height: 600, borderRadius: "50%", background: "rgba(56,189,248,0.04)", filter: "blur(120px)", pointerEvents: "none" }} />
+        <div style={{ maxWidth: "700px", margin: "0 auto", padding: "0 1.5rem", position: "relative", zIndex: 10 }}>
+          <motion.div {...fadeUp} transition={{ duration: 0.8 }} style={{ textAlign: "center", padding: "3rem 2rem", borderRadius: "2rem", background: "linear-gradient(180deg, rgba(12,74,110,0.25), rgba(0,0,0,0.7))", border: "1px solid rgba(56,189,248,0.12)", backdropFilter: "blur(10px)" }}>
+            <p style={{ fontSize: "0.75rem", textTransform: "uppercase", letterSpacing: "0.3em", color: "rgba(56,189,248,0.7)", marginBottom: "1rem" }}>Ready to Ride?</p>
+            <h2 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "0.5rem" }}>Sentio Snow</h2>
+            <p style={{ color: "#737373", fontSize: "0.9375rem", marginBottom: "1.5rem" }}>Ski &amp; Snowboard Edition</p>
 
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem", marginBottom: "2rem" }}>
-                {["OLED HUD", "HD Camera", "Crash SOS", "Anti-Fog Heated", "Magnetic Lens", "UV400"].map((tag) => (
-                  <span key={tag} style={{ fontSize: "0.75rem", color: "#38bdf8", backgroundColor: "rgba(56,189,248,0.08)", padding: "0.375rem 0.75rem", borderRadius: "9999px" }}>{tag}</span>
-                ))}
-              </div>
+            <p style={{ fontSize: "clamp(2.5rem, 7vw, 4rem)", fontWeight: 800, color: "#38bdf8", marginBottom: "1.5rem" }}>$379</p>
 
-              <button style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.5rem", padding: "1rem", borderRadius: "9999px", background: "linear-gradient(90deg, #38bdf8, #67e8f9)", color: "#000", fontWeight: 600, fontSize: "0.875rem", border: "none", cursor: "pointer", transition: "all 0.3s", boxShadow: "0 0 30px rgba(56,189,248,0.25)" }}>
-                <ShoppingCart size={18} />
-                Buy Snow Edition — $379
-              </button>
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "0.5rem", marginBottom: "2rem" }}>
+              {["OLED HUD", "HD Camera", "Crash SOS", "Anti-Fog Heated", "Magnetic Lens", "UV400"].map((tag) => (
+                <span key={tag} style={{ fontSize: "0.6875rem", color: "#38bdf8", backgroundColor: "rgba(56,189,248,0.08)", padding: "0.375rem 0.75rem", borderRadius: "9999px", border: "1px solid rgba(56,189,248,0.1)" }}>{tag}</span>
+              ))}
+            </div>
 
-              <p style={{ textAlign: "center", fontSize: "0.75rem", color: "#737373", marginTop: "1rem" }}>
-                Free shipping · 30-day returns · 2-year warranty
-              </p>
-            </motion.div>
-          </div>
+            <button style={{ width: "100%", maxWidth: "400px", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.625rem", padding: "1.25rem 2rem", borderRadius: "9999px", background: "linear-gradient(90deg, #38bdf8, #67e8f9)", color: "#000", fontWeight: 700, fontSize: "1.0625rem", border: "none", cursor: "pointer", margin: "0 auto", boxShadow: "0 0 50px rgba(56,189,248,0.35), 0 6px 24px rgba(0,0,0,0.4)", letterSpacing: "0.02em" }}>
+              <ShoppingCart size={20} />
+              Pre-Order Now — $379
+            </button>
+
+            <div style={{ display: "flex", justifyContent: "center", flexWrap: "wrap", gap: "1.5rem", marginTop: "1.5rem" }}>
+              {[
+                { icon: Truck, text: "Free Worldwide Shipping" },
+                { icon: RefreshCw, text: "30-Day Returns" },
+                { icon: Award, text: "2-Year Warranty" },
+              ].map((t) => {
+                const Icon = t.icon;
+                return (
+                  <div key={t.text} style={{ display: "flex", alignItems: "center", gap: "0.375rem" }}>
+                    <Icon size={13} style={{ color: "rgba(56,189,248,0.5)" }} />
+                    <span style={{ fontSize: "0.75rem", color: "#737373" }}>{t.text}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>
