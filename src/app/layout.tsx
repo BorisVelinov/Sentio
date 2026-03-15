@@ -23,6 +23,9 @@ export const metadata: Metadata = {
     "ESP32",
     "OLED HUD",
   ],
+  icons: {
+    icon: "/images/Screenshot_2026-03-15_042700-removebg-preview.png",
+  },
 };
 
 export default function RootLayout({
